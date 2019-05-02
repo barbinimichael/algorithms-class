@@ -1,5 +1,10 @@
 
 // quick-union union-find 
+// number of array accesses
+// initialize- n
+// union- n
+// find- n
+// O(n^2)
 public class QuickUnion extends QuickUnionFind {
 	
 	// each index represents a node
