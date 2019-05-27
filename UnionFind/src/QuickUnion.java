@@ -23,13 +23,8 @@ public class QuickUnion extends QuickUnionFind {
 	// component identifier for p
 	// return root
 	int find(int p) {
-		int current = this.elements[p];
-		int parent = this.elements[current];
-		
-		if(current == parent) {
-			return current;
-		} else {
-			return this.find(parent);
-		}
+		while(p != this.elements[p])
+			p = this.elements[p];
+		return p;
 	}
 }

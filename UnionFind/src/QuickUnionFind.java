@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+// quick union-find
 public abstract class QuickUnionFind {
 
 	// data structure

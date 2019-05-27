@@ -7,7 +7,7 @@ public class Client {
 
 	// given a file
 	// first line represents size of data structure
-	// and type of union-find, where 0 = quick-find, 1 = quick-union
+	// and type of union-find, where 0 = quick-find, 1 = quick-union, 2 = weighted quick-union
 	// after, given pairs, determine if connected
 	// if not, connect and print pair
 	static void executeFile(File commandFile) {
@@ -36,8 +36,11 @@ public class Client {
 
 		if(type == 0) 
 			uF = new QuickFind(n);
-		else
+		else if(type == 1)
 			uF = new QuickUnion(n);
+		else {
+			uF = new WeightedQuickUnion(n);
+		}
 
 		// begin quick-find
 		while(fileScanner.hasNextLine()) {
