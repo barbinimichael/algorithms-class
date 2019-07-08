@@ -1,5 +1,3 @@
-import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 /* Percolation
@@ -7,29 +5,33 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  * what is the probability that the system percolates?
  */
 
-class Percolation {
+public class Percolation {
 
 	// side length of grid
-	int n;
+	private int n;
 	// size of grid
-	int size;
+	private int size;
 
 	// using Weighted union-find for checking for percolation
 	// contains a n x n array for storing connected components
-	WeightedQuickUnionUF unionFind;
+	private WeightedQuickUnionUF unionFind;
 
 	// array to track whether site is open, true if open, false else
 	// * better option would have been to track whether open by having
 	// index be negative if closed, positive if open
-	boolean[] statusSites;
+	private boolean[] statusSites;
 
-	Percolation(int n) {
-		this.n= n;
-		this.size = n*n;
+	public Percolation(int n) {
+		if (n <= 0) {
+			throw new IllegalArgumentException("n must be positive");
+		} else {
+			this.n = n;
+			this.size = n * n;
 
-		this.unionFind  = new WeightedQuickUnionUF(size);
-		this.statusSites = new boolean[size];
-		this.initialize();
+			this.unionFind = new WeightedQuickUnionUF(size);
+			this.statusSites = new boolean[size];
+			this.initialize();
+		}
 	}
 
 	// open site (row, col) if it is not open already
@@ -38,23 +40,23 @@ class Percolation {
 		this.checkRange(row, col);
 
 		int currentCell = this.findCell(row, col);
-		
+
 		this.statusSites[currentCell] = true;
 
-		if(row > 1) {
-			if(this.isOpen(row - 1, col))
+		if (row > 1) {
+			if (this.isOpen(row - 1, col))
 				this.unionFind.union(currentCell, this.findCell(row - 1, col));
 		}
-		if(row < n) {
-			if(this.isOpen(row + 1, col))
+		if (row < n) {
+			if (this.isOpen(row + 1, col))
 				this.unionFind.union(currentCell, this.findCell(row + 1, col));
 		}
-		if(col > 1) {
-			if(this.isOpen(col - 1, col))
+		if (col > 1) {
+			if (this.isOpen(row, col - 1))
 				this.unionFind.union(currentCell, this.findCell(row, col - 1));
 		}
-		if(col < n ) {
-			if(this.isOpen(col + 1, col))
+		if (col < n) {
+			if (this.isOpen(row, col + 1))
 				this.unionFind.union(currentCell, this.findCell(row, col + 1));
 		}
 	}
@@ -71,23 +73,26 @@ class Percolation {
 	public boolean isFull(int row, int col) {
 		this.checkRange(row, col);
 		int currentCell = this.findCell(row, col);
-
-		for(int n = 0; n < this.n; n++) {
-			int currentTopCell = this.findCell(0, n);
-			if(this.unionFind.connected(this.unionFind.find(currentCell), this.unionFind.find(currentTopCell))) {
-				return true;
+		if (this.isOpen(row, col)) {
+			for (int i = 1; i <= this.n; i++) {
+				if (this.isOpen(1, i)) {
+					int currentTopCell = this.findCell(1, i);
+					if (this.unionFind.connected(currentCell, currentTopCell)) {
+						return true;
+					}
+				}
 			}
 		}
-		
+
 		return false;
 	}
 
 	// number of open sites
 	public int numberOfOpenSites() {
 		int count = 0;
-		
-		for(int n = 0; n < this.size; n++) {
-			if(this.statusSites[n])
+
+		for (int i = 0; i < this.size; i++) {
+			if (this.statusSites[i])
 				count++;
 		}
 		return count;
@@ -95,8 +100,8 @@ class Percolation {
 
 	// does the system percolate?
 	public boolean percolates() {
-		for(int n = 0; n < this.n; n++) {
-			if(this.isFull(this.n, n)) {
+		for (int i = 1; i <= this.n; i++) {
+			if (this.isFull(this.n, i)) {
 				return true;
 			}
 		}
@@ -106,26 +111,46 @@ class Percolation {
 	// check that requested index is within range
 	// by convention, sites range from 1 to n, where (1, 1) is the upper-left corner
 	private void checkRange(int row, int column) {
-		if(row < 0 || row > n || column < 0 || column > n) {
+		if (row <= 0 || row > n || column <= 0 || column > n) {
 			throw new IllegalArgumentException("Requested index out of bounds");
 		}
 	}
 
 	// initialize sites as all closed
 	private void initialize() {
-		for(int n = 0; n < this.size; n++) {
-			this.statusSites[n] = false;
+		for (int i = 0; i < this.size; i++) {
+			this.statusSites[i] = false;
 		}
 	}
 
-	// determine the cell given the row and column 
+	// determine the cell given the row and column
 	private int findCell(int row, int col) {
 		return (row - 1) * this.n + (col - 1);
 	}
 
 	// test client
 	public static void main(String[] args) {
-		Percolation percolation = new Percolation(4);
-		System.out.println(percolation.unionFind.find(percolation.findCell(3, 4)));
+		Percolation percolation = new Percolation(10);
+		/*System.out.println(percolation.isFull(1, 1));
+		System.out.println(percolation.isOpen(1, 1));*/
+		percolation.open(2, 1);
+		// System.out.println(percolation.isFull(2, 1));
+		percolation.open(1, 1);
+		/*System.out.println(percolation.isFull(1, 1));
+		System.out.println(percolation.isFull(2, 1));
+		System.out.println(percolation.isFull(2, 2));*/
+		percolation.open(2, 2);
+		/*System.out.println(percolation.isFull(1, 1));
+		System.out.println(percolation.isFull(2, 1));
+		System.out.println(percolation.isFull(2, 2));*/
+		System.out.println(percolation.isFull(2, 3));
+		percolation.open(2, 3);
+		System.out.println(percolation.isFull(2, 3));
+		System.out.println(percolation.isFull(2, 4));
+		percolation.open(2, 4);
+		System.out.println(percolation.isFull(2, 4));
+		System.out.println(percolation.isFull(1, 4));
+		percolation.open(1, 4);
+		System.out.println(percolation.isFull(1, 4));
 	}
 }
