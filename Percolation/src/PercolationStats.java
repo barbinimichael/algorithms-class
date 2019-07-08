@@ -5,50 +5,42 @@ import edu.princeton.cs.algs4.StdStats;
 
 // Represents statistical testing of percolation
 public class PercolationStats {
-	
-	// z value for 95 percent confidence interval
-		private static final double CONFIDENCE_95 = 1.96;
-	
-	private Percolation percolation;
-	private int n;
-	private int trials;
-	// percolation thresholds for t trials
-	private double[] thresholds;
 
-	
+	// z value for 95 percent confidence interval
+	private static final double CONFIDENCE_95 = 1.96;
+
+	private double mean;
+	private double stddev;
+	private double confidenceLo;
+	private double confidenceHi;
+
 	// perform independent trials on an n-by-n grid
 	public PercolationStats(int n, int trials) {
 		if (n <= 0 || trials <= 0) {
 			throw new IllegalArgumentException();
 		} else {
-			this.n = n;
-			this.trials = trials;
-			this.thresholds = new double[this.trials];
-
-			this.findThreshold();
+			this.calcStats(n, trials);
 		}
 	}
 
 	// sample mean of percolation threshold
 	public double mean() {
-		return StdStats.mean(this.thresholds);
+		return this.mean;
 	}
 
 	// sample standard deviation of percolation threshold
 	public double stddev() {
-		return StdStats.stddev(this.thresholds);
+		return this.stddev;
 	}
 
 	// low endpoint of 95% confidence interval
 	public double confidenceLo() {
-		// sample mean - z * std / sqrt(n)
-		return this.mean() - CONFIDENCE_95 * (this.stddev() / Math.sqrt(this.trials));
+		return this.confidenceLo;
 	}
 
 	// high endpoint of 95% confidence interval
 	public double confidenceHi() {
-		// sample mean + z * std / sqrt(n)
-		return this.mean() + CONFIDENCE_95 * (this.stddev() / Math.sqrt(this.trials));
+		return this.confidenceHi;
 	}
 
 	// test client
@@ -61,26 +53,59 @@ public class PercolationStats {
 		int trials = StdIn.readInt();
 
 		PercolationStats stats = new PercolationStats(n, trials);
-		StdOut.println("mean " + stats.mean());
-		StdOut.println("stddev " + stats.stddev());
-		StdOut.println("95 % confidence interval = [" + stats.confidenceLo() + " , " + stats.confidenceHi() + "]");
 		
-		System.out.println((double) 15 / (5 * 5));
+		 StdOut.println("mean " + stats.mean());
+		 StdOut.println("stddev " + stats.stddev());
+		 StdOut.println("95 % confidence interval = [" + stats.confidenceLo() + " , "
+		 + stats.confidenceHi() + "]");
 
 	}
 
+	// calc all statistical values
+	private void calcStats(int n, int trials) {
+		double[] thresholds = this.findThreshold(n, trials);
+		this.mean = this.calcMean(thresholds);
+		this.stddev = this.calcStddev(thresholds);
+		this.confidenceLo = this.calcConfidenceLo(trials);
+		this.confidenceHi = this.calcConfidenceHi(trials);
+	}
+
+	// sample mean of percolation threshold
+	private double calcMean(double[] thresholds) {
+		return StdStats.mean(thresholds);
+	}
+
+	// sample standard deviation of percolation threshold
+	private double calcStddev(double[] thresholds) {
+		return StdStats.stddev(thresholds);
+	}
+
+	// low endpoint of 95% confidence interval
+	private double calcConfidenceLo(int trials) {
+		// sample mean - z * std / sqrt(n)
+		return this.mean - CONFIDENCE_95 * (this.stddev / Math.sqrt(trials));
+	}
+
+	// high endpoint of 95% confidence interval
+	private double calcConfidenceHi(int trials) {
+		// sample mean + z * std / sqrt(n)
+		return this.mean + CONFIDENCE_95 * (this.stddev / Math.sqrt(trials));
+	}
+
 	// determine threshold value for t trials
-	private void findThreshold() {
-		for (int i = 0; i < this.trials; i++) {
-			this.percolation = new Percolation(n);
+	private double[] findThreshold(int n, int trials) {
+		double[] thresholds = new double[trials];
+
+		for (int i = 0; i < trials; i++) {
+			Percolation percolation = new Percolation(n);
 			// determine number of sites need to be opened before percolates
 			int count = 0;
 			while (!percolation.percolates()) {
 				boolean notOpen = true;
 				// choose a site at random that is blocked
 				while (notOpen) {
-					int randomRow = StdRandom.uniform(this.n) + 1;
-					int randomCol = StdRandom.uniform(this.n) + 1;
+					int randomRow = StdRandom.uniform(n) + 1;
+					int randomCol = StdRandom.uniform(n) + 1;
 
 					// open the site and track
 					if (!percolation.isOpen(randomRow, randomCol)) {
@@ -90,8 +115,8 @@ public class PercolationStats {
 					}
 				}
 			}
-			this.thresholds[i] = (double) count / (double) (this.n * this.n);
-			// System.out.println(this.thresholds[i]);
+			thresholds[i] = (double) count / (double) (n * n);
 		}
+		return thresholds;
 	}
 }
