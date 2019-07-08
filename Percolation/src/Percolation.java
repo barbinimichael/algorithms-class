@@ -7,13 +7,15 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
 
+	// index representing the top layer of cells
+	private int top;
+
 	// side length of grid
 	private int n;
-	// size of grid
-	private int size;
 
 	// using Weighted union-find for checking for percolation
 	// contains a n x n array for storing connected components
+	// if cell in first layer open, connect to n*n + 1 entry
 	private WeightedQuickUnionUF unionFind;
 
 	// array to track whether site is open, true if open, false else
@@ -26,10 +28,11 @@ public class Percolation {
 			throw new IllegalArgumentException("n must be positive");
 		} else {
 			this.n = n;
-			this.size = n * n;
+			this.top = n * n;
 
-			this.unionFind = new WeightedQuickUnionUF(size);
-			this.statusSites = new boolean[size];
+			this.unionFind = new WeightedQuickUnionUF(n * n + 1);
+
+			this.statusSites = new boolean[n * n];
 			this.initialize();
 		}
 	}
@@ -41,7 +44,13 @@ public class Percolation {
 
 		int currentCell = this.findCell(row, col);
 
+		// mark as open
 		this.statusSites[currentCell] = true;
+
+		// connect to top layer node if in top layer
+		if(row == 1) {
+			this.unionFind.union(currentCell, this.top);
+		}
 
 		if (row > 1) {
 			if (this.isOpen(row - 1, col))
@@ -65,35 +74,27 @@ public class Percolation {
 	public boolean isOpen(int row, int col) {
 		this.checkRange(row, col);
 
-		return statusSites[this.findCell(row, col)];
+		return this.statusSites[this.findCell(row, col)];
 	}
 
 	// is site (row, col) full?
 	// full if connected to the top row
 	public boolean isFull(int row, int col) {
 		this.checkRange(row, col);
-		int currentCell = this.findCell(row, col);
-		if (this.isOpen(row, col)) {
-			for (int i = 1; i <= this.n; i++) {
-				if (this.isOpen(1, i)) {
-					int currentTopCell = this.findCell(1, i);
-					if (this.unionFind.connected(currentCell, currentTopCell)) {
-						return true;
-					}
-				}
-			}
-		}
 
-		return false;
+		return this.isOpen(row, col) && this.unionFind.connected(this.findCell(row, col), this.top);
 	}
 
 	// number of open sites
 	public int numberOfOpenSites() {
 		int count = 0;
 
-		for (int i = 0; i < this.size; i++) {
-			if (this.statusSites[i])
-				count++;
+		for (int i = 1; i <= this.n; i++) {
+			for (int j = 1; j <= this.n; j++) {
+				if (this.isOpen(i, j)) {
+					count++;
+				}
+			}
 		}
 		return count;
 	}
@@ -118,7 +119,7 @@ public class Percolation {
 
 	// initialize sites as all closed
 	private void initialize() {
-		for (int i = 0; i < this.size; i++) {
+		for (int i = 0; i < this.n * this.n; i++) {
 			this.statusSites[i] = false;
 		}
 	}
@@ -131,18 +132,24 @@ public class Percolation {
 	// test client
 	public static void main(String[] args) {
 		Percolation percolation = new Percolation(10);
-		/*System.out.println(percolation.isFull(1, 1));
-		System.out.println(percolation.isOpen(1, 1));*/
+		/*
+		 * System.out.println(percolation.isFull(1, 1));
+		 * System.out.println(percolation.isOpen(1, 1));
+		 */
 		percolation.open(2, 1);
 		// System.out.println(percolation.isFull(2, 1));
 		percolation.open(1, 1);
-		/*System.out.println(percolation.isFull(1, 1));
-		System.out.println(percolation.isFull(2, 1));
-		System.out.println(percolation.isFull(2, 2));*/
+		/*
+		 * System.out.println(percolation.isFull(1, 1));
+		 * System.out.println(percolation.isFull(2, 1));
+		 * System.out.println(percolation.isFull(2, 2));
+		 */
 		percolation.open(2, 2);
-		/*System.out.println(percolation.isFull(1, 1));
-		System.out.println(percolation.isFull(2, 1));
-		System.out.println(percolation.isFull(2, 2));*/
+		/*
+		 * System.out.println(percolation.isFull(1, 1));
+		 * System.out.println(percolation.isFull(2, 1));
+		 * System.out.println(percolation.isFull(2, 2));
+		 */
 		System.out.println(percolation.isFull(2, 3));
 		percolation.open(2, 3);
 		System.out.println(percolation.isFull(2, 3));
@@ -152,5 +159,20 @@ public class Percolation {
 		System.out.println(percolation.isFull(1, 4));
 		percolation.open(1, 4);
 		System.out.println(percolation.isFull(1, 4));
+		System.out.println(percolation.numberOfOpenSites());
+		System.out.println(percolation.percolates());
+		percolation.open(3, 4);
+		percolation.open(4, 4);
+		percolation.open(5, 4);
+		percolation.open(6, 4);
+		percolation.open(7, 4);
+		percolation.open(8, 4);
+		percolation.open(9, 4);
+		percolation.open(10, 4);
+		System.out.println(percolation.numberOfOpenSites());
+		System.out.println(percolation.percolates());
+		System.out.println(percolation.isFull(1, 10));
+		percolation.open(2, 6);
+		System.out.println(percolation.isFull(2, 6));
 	}
 }
