@@ -6,156 +6,159 @@ import java.util.Iterator;
  * uniformly at random from items in the data structure
  */
 
-
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
-	// data structure
-	private Item[] queue;
-	int size;
+  // data structure
+  private Item[] queue;
+  private int size;
 
-	// construct an empty randomized queue
-	@SuppressWarnings("unchecked")
-	public RandomizedQueue() {
-		this.queue = (Item[]) new Object[1];
-		this.size = 0;
-	}
-	// is the randomized queue empty?
-	public boolean isEmpty() {
-		return this.size() == 0;
-	}
-	// return the number of items on the randomized queue
-	public int size() {
-		return this.size;
-	}
-	// add the item
-	public void enqueue(Item item) {
-		this.checkIncreaseSize();
-		for(int i = this.queue.length - 1; i >= 0; i--) {
-			if(this.queue[i] == null) {
-				this.queue[i] = item;
-				this.size++;
-				break;
-			}
-		}
-	}
+  // construct an empty randomized queue
+  public RandomizedQueue() {
+    this.queue = (Item[]) new Object[1];
+    this.size = 0;
+  }
 
-	// remove and return a random item
-	public Item dequeue() {
-		this.checkDecreaseSize();
-		while(true) {
-			int entry = (int) (Math.random() * this.queue.length);
-			// System.out.println("\nentry " + entry + " " + this.queue.length);
-			Item value = this.queue[entry];
+  // is the randomized queue empty?
+  public boolean isEmpty() {
+    return this.size() == 0;
+  }
 
-			if(this.queue[entry] != null) {
-				size--;
-				this.queue[entry] = null;
-				return value;
-			}
-		}	
-	}
+  // return the number of items on the randomized queue
+  public int size() {
+    return this.size;
+  }
 
-	// return a random item (but do not remove it)
-	public Item sample() {
-		while(true) {
-			int entry = (int) Math.random() * this.queue.length;
-			Item value = this.queue[entry];
+  // add the item
+  public void enqueue(Item item) {
+    this.checkIncreaseSize();
+    for (int i = this.queue.length - 1; i >= 0; i--) {
+      if (this.queue[i] == null) {
+        this.queue[i] = item;
+        this.size++;
+        break;
+      }
+    }
+  }
 
-			if(!this.queue[entry].equals(null)) {
-				return value;
-			}
-		}
-	}
+  // remove and return a random item
+  public Item dequeue() {
+    this.checkDecreaseSize();
+    while (true) {
+      int entry = (int) (Math.random() * this.queue.length);
+      Item value = this.queue[entry];
 
-	// return an independent iterator over items in random order
-	public Iterator<Item> iterator() {
-		return new RandomQueueIterator();
-	}
-	// unit testing (optional)
-	public static void main(String[] args) {
-		RandomizedQueue<Integer> queue = new RandomizedQueue<Integer>();
-		queue.enqueue(1);
-		System.out.println(queue.size());
-		queue.enqueue(2);
-		System.out.println(queue.size());
-		queue.enqueue(3);
-		System.out.println(queue.size());
-		queue.enqueue(3);
-		System.out.println(queue.size());
-		queue.enqueue(3);
-		System.out.println(queue.size());
+      if (this.queue[entry] != null) {
+        size--;
+        this.queue[entry] = null;
+        return value;
+      }
+    }
+  }
 
-		for(Integer i : queue) {
-			System.out.print(i + " ");
-		}
+  // return a random item (but do not remove it)
+  public Item sample() {
+    if(this.size() > 0) {
+      while (true) {
+        int entry = (int) (Math.random() * this.queue.length);
+        Item value = this.queue[entry];
 
-		System.out.println("-------------");
+        if (this.queue[entry] != null) {
+          return value;
+        }
+      }
+    } else {
+      throw new java.util.NoSuchElementException();
+    }
+  }
 
-		System.out.print(queue.dequeue() + " ");
-		System.out.println(queue.size());
-		System.out.print(queue.dequeue() + " ");
-		System.out.println(queue.size());
-		System.out.print(queue.dequeue() + " ");
-		System.out.println(queue.size());
-		System.out.print(queue.dequeue() + " ");
-		System.out.println(queue.size());
-		System.out.print(queue.dequeue() + " ");
-		System.out.println(queue.size());
-		System.out.println(queue.isEmpty());
-	}
+  // return an independent iterator over items in random order
+  public Iterator<Item> iterator() {
+    return new RandomQueueIterator();
+  }
 
-	// check that entries (front or back) have not overtaken 75% 
-	// if so, double the size of the array  
-	private void checkIncreaseSize() {
-		if(this.size() >= this.queue.length * .75) {
-			@SuppressWarnings("unchecked")
-			Item[] newQueue = (Item[]) new Object[this.queue.length * 2];
+  // unit testing (optional)
+  public static void main(String[] args) {
+    RandomizedQueue<Integer> queue = new RandomizedQueue<Integer>();
+    queue.enqueue(1);
+    System.out.println(queue.size());
+    queue.enqueue(2);
+    System.out.println(queue.size());
+    queue.enqueue(3);
+    System.out.println(queue.size());
+    queue.enqueue(3);
+    System.out.println(queue.size());
+    queue.enqueue(3);
+    System.out.println(queue.size());
 
-			for(int i = 0; i < this.queue.length; i++) {
-				newQueue[i] = this.queue[i];
-			}
-			this.queue = newQueue;
-		} 
-	}
-	// check that entries haven't dipped under 25% array size
-	// if so, halve array
-	private void checkDecreaseSize() {
-		if(this.size() <= this.queue.length * .25) {
-			@SuppressWarnings("unchecked")
-			Item[] newQueue = (Item[]) new Object[this.queue.length / 2];
+    for (Integer i : queue) {
+      System.out.print(i + " ");
+    }
 
-			int current = 0;
-			for(int i = 0; i < this.queue.length; i++) {
-				if(this.queue[i] != null) {
-					newQueue[current] = this.queue[i];
-					current++;
-				}
-			}
-			this.queue = newQueue;
-		}
-	}
+    System.out.println("-------------");
 
-	private class RandomQueueIterator implements Iterator<Item>{
+    System.out.print(queue.dequeue() + " ");
+    System.out.println(queue.size());
+    System.out.print(queue.dequeue() + " ");
+    System.out.println(queue.size());
+    System.out.print(queue.dequeue() + " ");
+    System.out.println(queue.size());
+    System.out.print(queue.dequeue() + " ");
+    System.out.println(queue.size());
+    System.out.print(queue.dequeue() + " ");
+    System.out.println(queue.size());
+    System.out.println(queue.isEmpty());
+  }
 
-		int count = 0;
-		int current = 0;
+  // check that entries (front or back) have not overtaken 75%
+  // if so, double the size of the array
+  private void checkIncreaseSize() {
+    if (this.size() >= this.queue.length * 0.75) {
+      Item[] newQueue = (Item[]) new Object[this.queue.length * 2];
 
-		public boolean hasNext() {
-			return this.current < queue.length;
-		}
+      for (int i = 0; i < this.queue.length; i++) {
+        newQueue[i] = this.queue[i];
+      }
+      this.queue = newQueue;
+    }
+  }
 
+  // check that entries haven't dipped under 25% array size
+  // if so, halve array
+  private void checkDecreaseSize() {
+    if (this.size() <= this.queue.length * 0.25) {
+      Item[] newQueue = (Item[]) new Object[this.queue.length / 2];
 
-		public Item next() {
-			while(this.hasNext()) {
-				if(queue[current] != null) {
-					count++;
-					return queue[current++];
-				} else {
-					current++;
-				}
-			}
-			throw new RuntimeException();
-		}
+      int current = 0;
+      for (int i = 0; i < this.queue.length; i++) {
+        if (this.queue[i] != null) {
+          newQueue[current] = this.queue[i];
+          current++;
+        }
+      }
+      this.queue = newQueue;
+    }
+  }
 
-	}
+  private class RandomQueueIterator implements Iterator<Item> {
+
+    int count = 0;
+    int current = 0;
+
+    public boolean hasNext() {
+      return this.current < queue.length;
+    }
+
+    public Item next() {
+      while (this.hasNext()) {
+        if (queue[current] != null) {
+          count++;
+          return queue[current++];
+        } else {
+          current++;
+        }
+      }
+      throw new RuntimeException();
+    }
+
+  }
 }
