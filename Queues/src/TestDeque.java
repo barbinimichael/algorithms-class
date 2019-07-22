@@ -1,8 +1,8 @@
 import static org.junit.Assert.assertEquals;
-
 import org.junit.*;
 
-public class UnitTest {
+
+public class TestDeque {
   
   @Test
   public void testAddLast() {

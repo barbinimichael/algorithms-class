@@ -8,8 +8,8 @@ public class Permutation {
      * Take two command line arguments k and S where S is a sequence of strings
      * where k are chosen randomly and printed
      */
-
-    int k = StdIn.readInt();
+    
+    int k = Integer.parseInt(args[0]);
     RandomizedQueue<String> randQueue = new RandomizedQueue<String>();
 
     int c = 0;

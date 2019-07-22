@@ -30,12 +30,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
   // add the item
   public void enqueue(Item item) {
-    this.checkIncreaseSize();
-    for (int i = this.queue.length - 1; i >= 0; i--) {
-      if (this.queue[i] == null) {
-        this.queue[i] = item;
-        this.size++;
-        break;
+    if (item == null) {
+      throw new IllegalArgumentException();
+    } else {
+      this.checkIncreaseSize();
+      for (int i = this.queue.length - 1; i >= 0; i--) {
+        if (this.queue[i] == null) {
+          this.queue[i] = item;
+          this.size++;
+          break;
+        }
       }
     }
   }
@@ -57,7 +61,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
   // return a random item (but do not remove it)
   public Item sample() {
-    if(this.size() > 0) {
+    if (this.size() > 0) {
       while (true) {
         int entry = (int) (Math.random() * this.queue.length);
         Item value = this.queue[entry];
@@ -79,34 +83,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
   // unit testing (optional)
   public static void main(String[] args) {
     RandomizedQueue<Integer> queue = new RandomizedQueue<Integer>();
-    queue.enqueue(1);
-    System.out.println(queue.size());
-    queue.enqueue(2);
-    System.out.println(queue.size());
-    queue.enqueue(3);
-    System.out.println(queue.size());
-    queue.enqueue(3);
-    System.out.println(queue.size());
-    queue.enqueue(3);
-    System.out.println(queue.size());
-
-    for (Integer i : queue) {
-      System.out.print(i + " ");
-    }
-
-    System.out.println("-------------");
-
-    System.out.print(queue.dequeue() + " ");
-    System.out.println(queue.size());
-    System.out.print(queue.dequeue() + " ");
-    System.out.println(queue.size());
-    System.out.print(queue.dequeue() + " ");
-    System.out.println(queue.size());
-    System.out.print(queue.dequeue() + " ");
-    System.out.println(queue.size());
-    System.out.print(queue.dequeue() + " ");
-    System.out.println(queue.size());
-    System.out.println(queue.isEmpty());
   }
 
   // check that entries (front or back) have not overtaken 75%
@@ -143,22 +119,47 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     int count = 0;
     int current = 0;
+    int[] orderChooser;
+
+    private RandomQueueIterator() {
+      this.orderChooser = orderChooser();
+    }
 
     public boolean hasNext() {
-      return this.current < queue.length;
+      return (this.count < size());
     }
 
     public Item next() {
-      while (this.hasNext()) {
-        if (queue[current] != null) {
-          count++;
-          return queue[current++];
-        } else {
-          current++;
+      while (this.current < queue.length) {
+        Item item = queue[this.orderChooser[this.current]];
+        this.current++;
+
+        if (item != null) {
+          this.count++;
+          return (item);
         }
       }
-      throw new RuntimeException();
+      throw new java.util.NoSuchElementException();
     }
 
+    private int[] orderChooser() {
+      int[] order = new int[queue.length];
+
+      // create the array
+      for (int i = 0; i < order.length; i++) {
+        order[i] = i;
+      }
+
+      // shuffle the array
+      for (int i = 0; i < order.length; i++) {
+        int temp = order[i];
+        int rand = (int) (Math.random() * order.length);
+
+        order[i] = order[rand];
+        order[rand] = temp;
+      }
+
+      return order;
+    }
   }
 }
