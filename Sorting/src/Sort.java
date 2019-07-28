@@ -9,6 +9,9 @@ public abstract class Sort<Item extends Comparable<Item>> implements Iterable<It
   public Sort() {
     this.list = new ArrayList<Item>();
   }
+  
+  // Perform a sort
+  public abstract void sort();
 
   // Add an item to the list items to sort
   public void addItem(Item item) {
