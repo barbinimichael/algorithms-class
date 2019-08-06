@@ -11,6 +11,7 @@
 
 import java.util.Arrays;
 import java.util.Comparator;
+
 import edu.princeton.cs.algs4.StdDraw;
 
 public class Point implements Comparable<Point> {
@@ -150,17 +151,17 @@ public class Point implements Comparable<Point> {
     points[5] = e;
     points[6] = f;
     points[7] = g;
-    
+
     for (Point point : points)
       System.out.println(point);
 
     System.out.println();
-    
+
     System.out.println("____________CHECKING_____________");
     System.out.println("-100 to -1 " + g.slopeTo(d));
     System.out.println("-100 to 1 " + g.slopeTo(a));
     System.out.println("-100 to 0,-1 " + g.slopeTo(c));
-    
+
     System.out.println("Comparing to -100");
     System.out.println();
 
@@ -169,11 +170,11 @@ public class Point implements Comparable<Point> {
 
     Arrays.sort(points, g.slopeOrder());
     System.out.println();
-    
+
     System.out.println("Sorting to -100");
-    
+
     for (Point point : points)
-      System.out.println(point);    
+      System.out.println(point);
     System.out.println("____________CHECKING_____________");
 
     System.out.println();
@@ -196,11 +197,27 @@ public class Point implements Comparable<Point> {
     for (LineSegment l : fls)
       System.out.println(l);
 
-    // check that throws correct exceptions
-    // points = new Point[4];
-    // points[0] = p;
-    // fast = new FastCollinearPoints(points);
-    
+    // check that throws correct exceptions when null entries
+    // Point[] pointException = new Point[10];
+    // for (int i = 0; i < pointException.length; i++)
+    // pointException[i] = null;
+    // pointException[4] = null;
+    // fls = new FastCollinearPoints(pointException).segments();
+    // fast = new FastCollinearPoints(null);
+
+    // check that throws correct exceptions when duplicate entries
+    // Point[] pointDuplicate = new Point[5];
+    // for (int i = 0; i < pointDuplicate.length; i++)
+    // pointDuplicate[i] = new Point(0, 0);
+    //
+    // fast = new FastCollinearPoints(pointDuplicate);
+    // pointDuplicate = new Point[4];
+    // pointDuplicate[0] = new Point(15879, 20930);
+    // pointDuplicate[1] = new Point(27979, 15259);
+    // pointDuplicate[2] = new Point(15879, 20930);
+    // pointDuplicate[3] = new Point(13321, 28988);
+    // fast = new FastCollinearPoints(pointDuplicate);
+
     Point aTwo = new Point(0, 0);
     Point bTwo = new Point(0, 1);
     Point cTwo = new Point(0, 2);
@@ -213,24 +230,24 @@ public class Point implements Comparable<Point> {
     Point jTwo = new Point(36, 30);
     Point kTwo = new Point(48, 40);
     Point lTwo = new Point(60, 50);
-    
+
     Point[] pointsTwo = new Point[12];
-    
+
     pointsTwo[0] = eTwo;
     System.out.println(pointsTwo[0] == null);
-    
+
     pointsTwo[1] = dTwo;
     System.out.println(pointsTwo[1] == null);
-    
+
     pointsTwo[2] = cTwo;
     System.out.println(pointsTwo[2] == null);
-    
+
     pointsTwo[3] = bTwo;
     System.out.println(pointsTwo[3] == null);
-    
+
     pointsTwo[4] = aTwo;
     System.out.println(pointsTwo[4] == null);
-    
+
     pointsTwo[5] = fTwo;
     pointsTwo[6] = gTwo;
     pointsTwo[7] = hTwo;
@@ -238,50 +255,112 @@ public class Point implements Comparable<Point> {
     pointsTwo[9] = jTwo;
     pointsTwo[10] = kTwo;
     pointsTwo[11] = lTwo;
-    
-    for (Point point : pointsTwo)
-      System.out.println(point);
-    
-    System.out.println("Ordering");
-    Arrays.sort(pointsTwo, pointsTwo[0].slopeOrder());
-    
-    for (Point point : pointsTwo)
-      System.out.println(point);
-    
+
+    // for (Point point : pointsTwo)
+    // System.out.println(point);
+    //
+    // System.out.println("Ordering");
+    // Arrays.sort(pointsTwo, pointsTwo[0].slopeOrder());
+    //
+    // for (Point point : pointsTwo)
+    // System.out.println(point);
+
     System.out.println("--------------------------------");
-    
+
     fast = new FastCollinearPoints(pointsTwo);
     fls = fast.segments();
     System.out.println(fast.numberOfSegments());
     for (LineSegment l : fls)
       System.out.println("Line segment " + l);
-    
+
     System.out.println("--------------------------------");
     // '(7419, 3187) -> (7419, 4361) -> (7419, 6089) -> (7419, 10712)'
     Point aThree = new Point(7419, 3187);
     Point bThree = new Point(7419, 4361);
     Point cThree = new Point(7419, 6089);
     Point dThree = new Point(7419, 10712);
-    
+
     Point[] pointsThree = new Point[4];
     pointsThree[0] = aThree;
     pointsThree[1] = bThree;
     pointsThree[2] = cThree;
     pointsThree[3] = dThree;
-    
+
     fast = new FastCollinearPoints(pointsThree);
     fls = fast.segments();
     System.out.println(fast.numberOfSegments());
     for (LineSegment l : fls)
       System.out.println("Line segment " + l);
-    
+
     System.out.println("____________");
     for (Point point : pointsThree)
       System.out.println(point);
 
     for (int i = 0; i < pointsThree.length; i++)
       System.out.println(aThree.slopeTo(pointsThree[i]));
-    
+
     System.out.println(aThree.slopeTo(bThree) == aThree.slopeTo(cThree));
+
+    System.out.println("--------------------------------");
+
+    Point aFour = new Point(10000, 0);
+    Point bFour = new Point(6000, 7000);
+    Point cFour = new Point(7000, 3000);
+    Point dFour = new Point(3000, 7000);
+    Point eFour = new Point(0, 10000);
+    Point fFour = new Point(3000, 4000);
+    Point gFour = new Point(20000, 21000);
+    Point hFour = new Point(14000, 15000);
+
+    Point[] pointsFour = { aFour, bFour, cFour, dFour, eFour, fFour, gFour, hFour };
+
+    fast = new FastCollinearPoints(pointsFour);
+    fls = fast.segments();
+    System.out.println(fast.numberOfSegments());
+    for (LineSegment l : fls)
+      System.out.println("Line segment " + l);
+
+    System.out.println("--------------------------------");
+
+    double totalTime = 0;
+
+    for (int j = 0; j < 1000; j++) {
+      Point[] pointsFive = new Point[64];
+      for (int i = 0; i < pointsFive.length; i++)
+        pointsFive[i] = new Point(0, i);
+
+      long startTime = System.nanoTime();
+      fast = new FastCollinearPoints(pointsFive);
+      fls = fast.segments();
+      long endTime = System.nanoTime();
+
+      totalTime += (double) (endTime - startTime) / 1000000;
+    }
+    System.out.println(totalTime / 1000);
+
+    Point checkA = new Point(0, 0);
+    Point checkB = new Point(0, 3);
+    Point checkC = new Point(0, 2);
+    System.out.println(checkC.compareTo(checkB));
+    
+    System.out.println("--------------------------------");
+    Point aSix = new Point(3000, 4000);
+    Point bSix = new Point(6000, 7000);
+    Point cSix = new Point(14000, 15000);
+    Point dSix = new Point(20000, 21000);
+    Point[] pointsSix = {aSix, bSix, cSix, dSix};
+    
+    for (int i = 0; i < 10; i++) {
+      java.util.Random rgen = new java.util.Random();  // Random number generator     
+      for (int j = 0; j < pointsSix.length; j++) {
+          int randomPosition = rgen.nextInt(pointsSix.length);
+          Point temp = pointsSix[j];
+          pointsSix[j] = pointsSix[randomPosition];
+          pointsSix[randomPosition] = temp;
+      }
+      fast = new FastCollinearPoints(pointsSix);
+      System.out.println(fast.numberOfSegments());
+    }
+
   }
 }
