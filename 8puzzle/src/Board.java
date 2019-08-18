@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Iterator;
 
 public class Board {
@@ -9,7 +8,7 @@ public class Board {
   // create a board from an n-by-n array of tiles,
   // where tiles[row][col] = tile at (row, col)
   public Board(int[][] tiles) {
-    this.tiles = tiles;
+    this.tiles = this.copy2DArray(tiles);
   }
 
   // string representation of this board
@@ -80,24 +79,49 @@ public class Board {
 
   // is this board the goal board?
   public boolean isGoal() {
-    return false;
+
+    for (int i = 0; i < this.dimension(); i++) {
+      for (int j = 0; j < this.dimension(); j++) {
+
+        if (i == this.dimension() - 1 && j == this.dimension() - 1) {
+          if (this.tiles[i][j] == 0) {
+            return true;
+          }
+        } else if (this.tiles[i][j] != i * this.tiles.length + j + 1)
+          return false;
+      }
+    }
+    return true;
   }
 
   // does this board equal y?
   public boolean equals(Object y) {
 
-    if (y instanceof Board) {
-      int[][] otherTiles = ((Board) y).tiles;
+    if (y == this)
+      return true;
 
-      for (int i = 0; i < this.tiles.length; i++) {
-        for (int j = 0; j < this.tiles.length; j++) {
+    if (y == null)
+      return false;
 
-          if (this.tiles[i][j] != otherTiles[i][j]) {
-            return false;
-          }
+    if (y.getClass() != this.getClass())
+      return false;
+
+    Board otherBoard = (Board) y;
+    
+    if (otherBoard.dimension() != this.dimension())
+      return false;
+    
+    int[][] otherTiles = otherBoard.tiles;
+
+    for (int i = 0; i < this.tiles.length; i++) {
+      for (int j = 0; j < this.tiles.length; j++) {
+
+        if (this.tiles[i][j] != otherTiles[i][j]) {
+          return false;
         }
       }
     }
+
 
     return true;
   }
@@ -109,7 +133,37 @@ public class Board {
 
   // a board that is obtained by exchanging any pair of tiles
   public Board twin() {
-    return null;
+
+    int[][] newTiles = copy2DArray(this.tiles);
+
+
+    if (this.tiles.length > 1) {
+      for (int i = 0; i < this.dimension(); i++) {
+        for (int j = 0; j < this.dimension(); j++) {
+          if (this.tiles[i][j] != 0) {
+
+            for (int k = i; k < this.dimension(); k++) {
+              for (int m = j + 1; m < this.dimension(); m++) {
+                if (this.tiles[k][m] != 0
+                    && this.tiles[k][m] != this.tiles[i][j]) {
+                  
+                  int temp = newTiles[i][j];
+                  newTiles[i][j] = this.tiles[k][m];
+                  newTiles[k][m] = this.tiles[i][j];
+
+                  return new Board(newTiles);
+                }
+              }
+            }
+            
+          }
+        }
+      }
+
+      
+    }
+
+    return this;
   }
 
   // unit testing (not graded)
@@ -132,13 +186,25 @@ public class Board {
     for (int i = 0; i < this.dimension(); i++) {
       for (int j = 0; j < this.dimension(); j++) {
         if (this.tiles[i][j] == 0) {
-          
-          return new int[] {i, j};
+
+          return new int[] { i, j };
         }
       }
     }
 
     throw new RuntimeException();
+  }
+  
+  private int[][] copy2DArray(int[][] array) {
+    int[][] newArray = new int[array.length][array.length];
+    
+    for (int i = 0; i < array.length; i++) {
+      for (int j = 0; j < array.length; j++) {
+        newArray[i][j] = array[i][j];
+      }
+    }
+    
+    return newArray;
   }
 
   // Iterable
@@ -153,7 +219,7 @@ public class Board {
   // Iterator
   private class BoardIterator implements Iterator<Board> {
 
-    private int[][][] neighbors = new int[3][dimension()][dimension()];
+    private int[][][] neighbors = new int[4][dimension()][dimension()];
     private int numNeighbors = 0;
 
     private int count = 0;
@@ -164,14 +230,16 @@ public class Board {
       if (blankSquare[0] != 0) {
         this.neighbors[numNeighbors++] = this.createNeighbor(0, blankSquare);
 
-      } else if (blankSquare[0] != dimension() - 1) {
+      }
+      if (blankSquare[0] != dimension() - 1) {
         this.neighbors[numNeighbors++] = this.createNeighbor(1, blankSquare);
       }
 
       if (blankSquare[1] != 0) {
         this.neighbors[numNeighbors++] = this.createNeighbor(2, blankSquare);
-        
-      } else if (blankSquare[1] != dimension() - 1) {
+
+      }
+      if (blankSquare[1] != dimension() - 1) {
         this.neighbors[numNeighbors++] = this.createNeighbor(3, blankSquare);
       }
     }
@@ -185,14 +253,8 @@ public class Board {
     }
 
     private int[][] createNeighbor(int direction, int[] blankSquare) {
-     
-      int[][] newTiles = new int[dimension()][dimension()];
-      
-      for (int i = 0; i < dimension(); i++) {
-        for (int j = 0; j < dimension(); j++) {
-          newTiles[i][j] = tiles[i][j];
-        }
-      }
+
+      int[][] newTiles = copy2DArray(tiles);
 
       if (direction == 0) {
         newTiles[blankSquare[0]][blankSquare[1]] = newTiles[blankSquare[0] - 1][blankSquare[1]];
